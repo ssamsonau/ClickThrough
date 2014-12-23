@@ -11,8 +11,9 @@ prepareDT <- function(DT){
   #levels of the outcome will be translated to DF coloumn names while predicting probabilities
   #- so they should not start from a number
   if("click" %in% names(DT))
-    DT[, click := paste0("L", as.character(click))]
+    DT[, .outcome := paste0("L", as.character(click))]
   
+  colToDelete <- c(colToDelete, "click") #click was replaced by .outcome
   
   DT[, (colToDelete):= NULL]
   

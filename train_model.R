@@ -3,27 +3,28 @@ source("./prepareDT.R")
 
 prepareDT(trainDT)
 
+
 #lev <- lapply(trainDT, levels)
 
 #trainDT <- trainDT[sample(1:nrow(trainDT), N_rows), ]
 
-str(trainDT)
+source("multiClassSummary.R")
 
+#trGrid <-  expand.grid(mtry=c(2))
 
+trainCt <- trainControl(
+  method = "cv", number =2,
+  summaryFunction = multiClassSummary, ## Evaluate performance using the following function
+  classProbs = TRUE) 
 
-trainCt <- trainControl(method = "boot", 
-                        number = 10,
-                        classProbs=TRUE,
-                        summaryFunction=twoClassSummary, 
-                        verboseIter=TRUE,
-                        allowParallel=UseParallel)
-
-mod <- train(click ~ ., data=trainDT, 
+mod <- train(.outcome ~ ., data=trainDT, 
              method="rf",
-             trControl=trainCt, metric="ROC")
-mod
+             trControl=trainCt, #tuneGrid = trGrid,
+             metrics="logLoss")
+
+print(mod)
 
 save(mod, file = paste0("model_", N_rows, "_RF.rda"))
 
-predOut <- predict(mod, newdata=trainDT)
-print(predOut)
+#predOut <- predict(mod, newdata=trainDT)
+#print(predOut)

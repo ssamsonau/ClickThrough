@@ -2,11 +2,12 @@ library(data.table)
 
 load(paste0("model_", N_rows, "_RF.rda"))
 
-testDT <- fread(paste0(file.path, "test"))
+testDT <- fread(paste0(file.path, "test"), colClasses=c(id="character"))
 
 combOut <- subset(testDT, select=id)
 combOut[,click:=c(2)] #click coloumn for probability of click (this name should be submitted)
 
+library(caret)
 source("prepareDT.R")
 prepareDT(testDT)
 
@@ -28,7 +29,7 @@ s.T.size  <- nrow(subtestDT)
 
 sliceVect <- rep(FALSE, s.T.size)
 
-N_chunks = 10
+N_chunks = 50
 for(chunk in 1:N_chunks){
   sliceVect[((chunk-1)*s.T.size/N_chunks):(chunk*s.T.size/N_chunks)] <- TRUE
   
