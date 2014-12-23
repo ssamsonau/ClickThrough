@@ -1,3 +1,7 @@
+gl.var <- ls() 
+gl.var <- gl.var[! (gl.var %in% c("N_rows", "file.path", "vectIDs") )] 
+rm( list =gl.var )
+ 
 library(data.table)
 
 load(paste0("model_", N_rows, "_RF.rda"))
@@ -29,19 +33,18 @@ s.T.size  <- nrow(subtestDT)
 
 sliceVect <- rep(FALSE, s.T.size)
 
-N_chunks = 50
+N_chunks = 100
 for(chunk in 1:N_chunks){
   sliceVect[((chunk-1)*s.T.size/N_chunks):(chunk*s.T.size/N_chunks)] <- TRUE
   
   print(table(sliceVect))
+  print(chunk)
   print(range(which(sliceVect)))
   
   out[matchT][sliceVect] <- predict(mod, newdata=subtestDT[sliceVect, ], type="prob")$L1
 
   sliceVect[sliceVect] <- FALSE
 }
-
-#N_chunksout <- predict(mod, newdata=subtestDT, type="prob")
  
 combOut[matchT, click:= out[matchT]]
 

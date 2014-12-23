@@ -3,14 +3,9 @@ source("./prepareDT.R")
 
 prepareDT(trainDT)
 
-
-#lev <- lapply(trainDT, levels)
-
-#trainDT <- trainDT[sample(1:nrow(trainDT), N_rows), ]
-
 source("multiClassSummary.R")
 
-#trGrid <-  expand.grid(mtry=c(2))
+trGrid <-  expand.grid(C=c(0.1, 0.3, 1, 3, 10, 100))
 
 trainCt <- trainControl(
   method = "cv", number =2,
@@ -18,13 +13,10 @@ trainCt <- trainControl(
   classProbs = TRUE) 
 
 mod <- train(.outcome ~ ., data=trainDT, 
-             method="rf",
-             trControl=trainCt, #tuneGrid = trGrid,
+             method=model.name,
+             trControl=trainCt, tuneGrid = trGrid,
              metrics="logLoss")
 
 print(mod)
 
-save(mod, file = paste0("model_", N_rows, "_RF.rda"))
-
-#predOut <- predict(mod, newdata=trainDT)
-#print(predOut)
+save(mod, file = paste0("model_", N_rows, "_", model.name, ".rda"))
