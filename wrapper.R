@@ -44,6 +44,4 @@ print(StopTime - StartTime)
 
 source("prediction.R")
 
-write.table(format(combOut, scientific=FALSE), file="submission.csv", quote=F, row.names=F, sep=",")
-
 if(UseParallel) stopCluster(workers)

@@ -3,19 +3,21 @@ source("./prepareDT.R")
 
 prepareDT(trainDT)
 
-source("multiClassSummary.R")
+source("myCustomClassSummary.R")
 
-trGrid <-  expand.grid(C=c(0.1, 0.3, 1, 3, 10, 100))
+#trGrid <-  expand.grid(C=c(0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30, 100, 300))
+trGrid <-  expand.grid(C=c(01, 1, 10))
 
 trainCt <- trainControl(
   method = "cv", number =2,
-  summaryFunction = multiClassSummary, ## Evaluate performance using the following function
+  summaryFunction = myCustomClassSummary, #multiClassSummary, ## Evaluate performance using the following function
   classProbs = TRUE) 
 
+print(str(trainDT))
 mod <- train(.outcome ~ ., data=trainDT, 
              method=model.name,
              trControl=trainCt, tuneGrid = trGrid,
-             metrics="logLoss")
+             metrics="logLoss", maximize=FALSE)
 
 print(mod)
 

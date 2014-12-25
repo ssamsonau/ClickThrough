@@ -1,10 +1,10 @@
 gl.var <- ls() 
-gl.var <- gl.var[! (gl.var %in% c("N_rows", "file.path", "vectIDs") )] 
+gl.var <- gl.var[! (gl.var %in% c("N_rows", "file.path", "vectIDs", "model.name", "workers", "UseParallel") )] 
 rm( list =gl.var )
  
 library(data.table)
 
-load(paste0("model_", N_rows, "_RF.rda"))
+load(paste0("model_", N_rows, "_", model.name, ".rda"))
 
 testDT <- fread(paste0(file.path, "test"), colClasses=c(id="character"))
 
@@ -31,19 +31,16 @@ subtestDT <- testDT[matchT]
 rm(testDT)
 s.T.size  <- nrow(subtestDT)
 
-sliceVect <- rep(FALSE, s.T.size)
 
-N_chunks = 100
-for(chunk in 1:N_chunks){
-  sliceVect[((chunk-1)*s.T.size/N_chunks):(chunk*s.T.size/N_chunks)] <- TRUE
-  
-  print(table(sliceVect))
-  print(chunk)
-  print(range(which(sliceVect)))
-  
-  out[matchT][sliceVect] <- predict(mod, newdata=subtestDT[sliceVect, ], type="prob")$L1
+N_chunks = 50
+slice <- data.table(subNumber=c(1:s.T.size))
+slice[, chunk:=subNumber%/%(.N%/%N_chunks)]
 
-  sliceVect[sliceVect] <- FALSE
+for(chunkN in 0:N_chunks){
+  print(chunkN)
+  out[matchT][slice[chunk==chunkN, subNumber]] <- 
+    predict.train(mod, newdata=subtestDT[slice[chunk==chunkN, subNumber], ], type="prob")$L1
+  print(out[matchT][1:10])
 }
  
 combOut[matchT, click:= out[matchT]]
@@ -51,3 +48,6 @@ combOut[matchT, click:= out[matchT]]
 combOut[click==2, click:=0.5] 
 
 summary(combOut)
+
+file.remove("submission.csv")
+write.table(format(combOut, scientific=FALSE), file="submission.csv", quote=F, row.names=F, sep=",")
