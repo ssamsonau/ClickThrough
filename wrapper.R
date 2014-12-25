@@ -1,6 +1,6 @@
 file.path <- "E://Temp/Click-Through-Data/"
 N_rows <- 5000
-model.name <- "svmLinear"
+model.name <- "svmRadial"
 
 UseParallel = TRUE
 N.of.clusters <- 3 # Number of clusters for a parralel execution
