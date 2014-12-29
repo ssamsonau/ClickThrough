@@ -13,7 +13,7 @@ combOut[,click:=c(2)] #click coloumn for probability of click (this name should 
 
 library(caret)
 source("prepareDT.R")
-prepareDT(testDT)
+prepareDT(testDT, "test")
 
 T.size <- nrow(testDT)
 
@@ -32,14 +32,15 @@ rm(testDT)
 s.T.size  <- nrow(subtestDT)
 
 
-N_chunks = 50
+N_chunks = 30
 slice <- data.table(subNumber=c(1:s.T.size))
 slice[, chunk:=subNumber%/%(.N%/%N_chunks)]
 
 for(chunkN in 0:N_chunks){
+#foreach(chunkN=0:N_chunks) %dopar% {
   print(chunkN)
   out[matchT][slice[chunk==chunkN, subNumber]] <- 
-    predict.train(mod, newdata=subtestDT[slice[chunk==chunkN, subNumber], ], type="prob")$L1
+    caret::predict.train(mod, newdata=subtestDT[slice[chunk==chunkN, subNumber], ], type="prob")$L1
   print(out[matchT][1:10])
 }
  
