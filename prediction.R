@@ -32,7 +32,7 @@ rm(testDT)
 s.T.size  <- nrow(subtestDT)
 
 
-N_chunks = 30
+N_chunks = 50
 slice <- data.table(subNumber=c(1:s.T.size))
 slice[, chunk:=subNumber%/%(.N%/%N_chunks)]
 

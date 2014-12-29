@@ -1,5 +1,5 @@
 file.path <- "E://Temp/Click-Through-Data/"
-N_rows <- 10000
+N_rows <- 50000
 model.name <- "svmLinear"
 
 UseParallel = TRUE
@@ -7,6 +7,7 @@ N.of.clusters <- 3 # Number of clusters for a parralel execution
 if(UseParallel) source("useParallel.R")
 
 set.seed(123)
+#set.seed(456)
 
 #Read ids
 library(data.table)

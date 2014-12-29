@@ -1,6 +1,6 @@
-
-sub123 <- fread("submission_svmLinear_10000_Seed123.csv")
-sub456 <- fread("submission_svmLinear_10000_Seed456.csv")
+library(data.table)
+sub123 <- fread("submission_svmLinear_10000_Seed123.csv", colClasses=c(id="character"))
+sub456 <- fread("submission_svmLinear_10000_Seed456.csv", colClasses=c(id="character"))
 
 str(sub123[click==0.5,])
 str(sub456[click==0.5,])
