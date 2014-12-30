@@ -19,7 +19,7 @@ prepareDT <- function(DT, use){
   if(use == "train"){
     #Determine how many levels has every variable. If more than certain number - remove variable.
     #For each factor value a new dummy variable is created - too much variables and bad generalization.
-    factorLimitN <- 100
+    factorLimitN <- 500
     
     colToDelete <-c("")  
     for(name in names(DT)){

@@ -6,6 +6,12 @@ library(data.table)
 
 load(paste0("model_", N_rows, "_", model.name, ".rda"))
 
+#what is training error
+library(Metrics)
+logLoss(  
+  ifelse(mod$trainingData$.outcome =="L1", 1, 0), 
+  mod$finalModel$fitted.values)
+
 testDT <- fread(paste0(file.path, "test"), colClasses=c(id="character"))
 
 combOut <- subset(testDT, select=id)
@@ -46,7 +52,7 @@ for(chunkN in 0:N_chunks){
  
 combOut[matchT, click:= out[matchT]]
 
-combOut[click==2, click:=0.5] 
+combOut[click==2, click:=0.169] 
 
 summary(combOut)
 

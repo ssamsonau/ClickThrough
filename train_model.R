@@ -28,3 +28,29 @@ mod <- train(.outcome ~ ., data=trainDT,
 print(mod)
 
 save(mod, file = paste0("model_", N_rows, "_", model.name, ".rda"))
+
+#what is training error
+library(Metrics)
+print("training error Final: logLoss")
+print(
+  logLoss(  ifelse(mod$trainingData$.outcome =="L1", 1, 0), 
+            mod$finalModel$fitted.values)
+)
+
+print("ROC curve")
+library(ROCR)
+#print( auc(response=mod$trainingData$.outcome, predictor=mod$finalModel$fitted.values)  )
+pr <- prediction(mod$finalModel$fitted.values, mod$trainingData$.outcome)
+plot(performance(pr, "tpr", "fpr"))
+print("AUC is")
+print( performance(pr, "auc")@y.values )
+
+
+#determine which value can be used as average
+# middle.value=seq(0.001, 1, by=0.001)
+# y <- middle.value
+# for(k in 1:length(middle.value))
+#     y[k]=logLoss(  ifelse(mod$trainingData$.outcome =="L1", 1, 0), middle.value[k])
+#     
+# #plot(middle.value, y)
+# which(min(y)==y)*0.001
