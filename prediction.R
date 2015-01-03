@@ -4,7 +4,8 @@ rm( list =gl.var )
  
 library(data.table)
 
-load(paste0("model_", N_rows, "_", model.name, ".rda"))
+#load(paste0("model_", N_rows, "_", model.name, "_lim", limitFactors, ".rda"))
+load(paste0("model_", N_rows, "_", model.name, "_lim", limitFactors, "_manuallyChosen.rda"))
 
 #what is training error
 library(Metrics)
@@ -19,7 +20,7 @@ combOut[,click:=c(2)] #click coloumn for probability of click (this name should 
 
 library(caret)
 source("prepareDT.R")
-prepareDT(testDT, "test")
+prepareDT(testDT, "test", limitFactors)
 
 T.size <- nrow(testDT)
 

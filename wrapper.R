@@ -1,6 +1,7 @@
 file.path <- "E://Temp/Click-Through-Data/"
 N_rows <- 50000
 model.name <- "nnet"
+limitFactors <- 100
 
 UseParallel = FALSE
 N.of.clusters <- 3 # Number of clusters for a parralel execution

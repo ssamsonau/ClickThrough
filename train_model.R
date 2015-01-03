@@ -1,7 +1,8 @@
 library(caret)
 source("./prepareDT.R")
 
-prepareDT(trainDT, "train")
+prepareDT(trainDT, "manually_chosen", limitFactors)
+print(str(trainDT))
 
 source("myCustomClassSummary.R")
 
@@ -10,7 +11,7 @@ source("myCustomClassSummary.R")
 trGrid <- expand.grid(size=c(7, 9, 11), decay=c(1e-3, 1e-1, 3e-1, 9e-1))
 
 trainCt <- trainControl(
-  method = "cv", number =2,
+  method = "cv", number =5,
   summaryFunction = myCustomClassSummary, #multiClassSummary, ## Evaluate performance using the following function
   #summaryFunction = twoClassSummary,
   classProbs = TRUE,
@@ -27,7 +28,8 @@ mod <- train(.outcome ~ ., data=trainDT,
              )
 print(mod)
 
-save(mod, file = paste0("model_", N_rows, "_", model.name, ".rda"))
+#save(mod, file = paste0("model_", N_rows, "_", model.name, "_lim", limitFactors, ".rda"))
+save(mod, file = paste0("model_", N_rows, "_", model.name, "_lim", limitFactors, "_manuallyChosen.rda"))
 
 #what is training error
 library(Metrics)
