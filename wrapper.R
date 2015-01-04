@@ -1,11 +1,12 @@
 file.path <- "E://Temp/Click-Through-Data/"
 N_rows <- 50000
-model.name <- "nnet"
-limitFactors <- 100
-
-UseParallel = FALSE
-N.of.clusters <- 3 # Number of clusters for a parralel execution
-if(UseParallel) source("useParallel.R")
+model.name <- "h2oDeep"
+limitFactors <- 200
+ 
+#library(Revobase);   setMKLthreads(4)
+#UseParallel = FALSE
+#N.of.clusters <- 3 # Number of clusters for a parralel execution
+#if(UseParallel) source("useParallel.R")
 
 set.seed(123)
 #set.seed(456)
@@ -24,7 +25,7 @@ vectorChooseSTR <- paste(vectorChoose, collapse="','")
 
 #Read subset of the data from db
 library(RSQLite)
-con <- dbConnect("SQLite", dbname= paste0(file.path, "ClickTroughTrain.sqlite") )
+con <- dbConnect(RSQLite::SQLite(), dbname= paste0(file.path, "ClickTroughTrain.sqlite") )
 
 trainDT <- data.table(
   dbGetQuery(con, paste0("SELECT * FROM trainTable WHERE id IN ('", vectorChooseSTR ,"') ;"))
@@ -32,12 +33,5 @@ trainDT <- data.table(
 dbDisconnect(con)
 
 
-StartTime <- Sys.time()
-source("train_model.R")
-StopTime <- Sys.time()
-
-print(StopTime - StartTime)
-
-source("prediction.R")
 
 if(UseParallel) stopCluster(workers)
