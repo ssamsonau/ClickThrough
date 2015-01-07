@@ -5,45 +5,45 @@ prepareDT(trainDT, "train", limitFactors)
 print(str(trainDT))
 
 library(h2o)
-localH2O = h2o.init(nthreads=4)
+localH2O = h2o.init(nthreads=-1)
 
-trainDT.h2o <- as.h2o(client = localH2O, trainDT)
+trainDT.h2o <- as.h2o(client = localH2O, trainDT, header=T)
 print(str(trainDT.h2o))
 
-#train_hex_split <- h2o.splitFrame(trainDT.h2o, ratios = 0.8, shuffle = TRUE)
-
+print("training a model")
 
 ## Train a 50-node, three-hidden-layer Deep Neural Networks for 100 epochs
-model <- h2o.deeplearning(x = 1:(ncol(trainDT.h2o)-1),
-                          y = ncol(trainDT.h2o),
+grid_search <- h2o.deeplearning(x = 2:ncol(trainDT.h2o),
+                          y = 1,
                           data = trainDT.h2o,
                           #validation = train_hex_split[[2]],
-                          nfolds =5,
-                          activation = "Rectifier",
-                          hidden = c(10, 10, 10),
-                          epochs = 100,
+                          nfolds = 5,
+                          hidden=list(c(20,20)),
+                          epochs = 60,
+                          activation=c("Tanh", "Rectifier"),
                           classification = TRUE,
-                          balance_classes = TRUE, 
+                          balance_classes = FALSE, 
                           adaptive_rate = TRUE,
-                          epsilon= 1e-10, #c(1e-4, 1e-6, 1e-8, 1e-10),
-                          rho = 0.99, #c(0.9, 0.95, 0.99),
-                          #l1=c(0, 0.01, 0.1, 1),
-                          sparse=FALSE)
-print(model)
+                          epsilon= c(1e-4, 1e-6, 1e-8, 1e-10),
+                          rho = c(0.9, 0.95, 0.99),
+                          #l2=c(1e-5, 1e-4),
+                          #l1=c(0, 1e-5),
+                          fast_mode=TRUE
+                          )
 
-h2o.saveModel(model, dir=".", name = paste0("model_h2o_", N_rows, "_", model.name, "_lim", limitFactors, ".rda"))
+best_model <- grid_search@model[[1]]
 
-predicted <- as.data.frame(h2o.predict(model, trainDT.h2o))
+best_params <- best_model@model$params
+
+print(best_model)
+print(best_params)
+
+#h2o.saveModel(model, dir=".", name = paste0("model_h2o_", model.name, "_lim", limitFactors, ".rda"))
+
+predicted <- as.data.frame(h2o.predict(best_model, trainDT.h2o))
 #what is training error
 library(Metrics)
 print("training error Final: logLoss")
-print(      logLoss( (ifelse(as.matrix(model@data$.outcome)[, 1 ] =="L1", 1, 0)), 
+print(      logLoss( (ifelse(as.matrix(best_model@data$click)[, 1 ] =="L1", 1, 0)), 
             predicted$L1)                                                            )
 
-#print("ROC curve")
-#library(ROCR)
-#print( auc(response=mod$trainingData$.outcome, predictor=mod$finalModel$fitted.values)  )
-#pr <- prediction(mod$finalModel$fitted.values, mod$trainingData$.outcome)
-#plot(performance(pr, "tpr", "fpr"))
-#print("AUC is")
-#print( performance(pr, "auc")@y.values )

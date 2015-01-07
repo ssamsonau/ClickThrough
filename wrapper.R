@@ -1,37 +1,26 @@
-file.path <- "E://Temp/Click-Through-Data/"
-N_rows <- 50000
+file.path <- "./data/"
+N_rows <- 1e5
 model.name <- "h2oDeep"
 limitFactors <- 200
- 
-#library(Revobase);   setMKLthreads(4)
-#UseParallel = FALSE
-#N.of.clusters <- 3 # Number of clusters for a parralel execution
-#if(UseParallel) source("useParallel.R")
+
+source("install.R")
 
 set.seed(123)
-#set.seed(456)
-
-#Read ids
 library(data.table)
 
-if(!exists("vectIDs")){
-  vectIDs <- fread(paste0(file.path, "trainIDs.csv"), colClasses="character")
-  setnames(vectIDs, "V1", "id")
-}
+select.names <- c("click", "C1", "banner_pos", "site_category", "app_domain", "app_category", 
+                  "device_type", "device_conn_type", "C15", "C16", "C17", "C18", "C19", 
+                  "C21", "hour")
+#C20 has many NAs
+#other rows have many factors...
+file.names <- names( fread(paste0(file.path, "train"), nrows=1, colClasses = rep("character", 24)) )
 
-#sample to get train data
-vectorChoose <- sample(vectIDs$id, N_rows)
-vectorChooseSTR <- paste(vectorChoose, collapse="','")
+trainDT <- fread(paste0(file.path, "train"),  
+                 colClasses = rep("character", 24),
+                 #na.strings="-1",
+                 select = which(file.names %in% select.names) )
 
-#Read subset of the data from db
-library(RSQLite)
-con <- dbConnect(RSQLite::SQLite(), dbname= paste0(file.path, "ClickTroughTrain.sqlite") )
+trainDT <-  trainDT[sample(1:40428967, 1e6), ]
 
-trainDT <- data.table(
-  dbGetQuery(con, paste0("SELECT * FROM trainTable WHERE id IN ('", vectorChooseSTR ,"') ;"))
-)
-dbDisconnect(con)
-
-
-
-if(UseParallel) stopCluster(workers)
+source("h2o.R")
+source("h2o_predict.R")

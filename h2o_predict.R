@@ -4,23 +4,23 @@
 
 library(data.table)
 
-model <- h2o.loadModel(localH2O, paste0("model_h2o_", N_rows, "_", model.name, "_lim", limitFactors, ".rda"))
+#model <- h2o.loadModel(localH2O, paste0("model_h2o_", model.name, "_lim", limitFactors, ".rda"))
 
-testDT <- fread(paste0(file.path, "test"), colClasses=c(id="character"))
+testDT <- fread(paste0(file.path, "test"), colClasses=rep("character", 23))
 combOut <- subset(testDT, select=id)
 source("prepareDT.R")
 prepareDT(testDT, "train", limitFactors)
 
 library(h2o)
-testDT.h2o <- as.h2o(client = localH2O, testDT)
+testDT.h2o <- as.h2o(client = localH2O, testDT, header=T)
 
 
 combOut[,click:=c(2)] #click coloumn for probability of click (this name should be submitted)
 
 
+print("making a prediction...")
 
-
-predictedTest <- h2o.predict(model, testDT.h2o)
+predictedTest <- h2o.predict(best_model, testDT.h2o)
 
 combOut[, click:= ( as.data.frame(predictedTest) )$L1]
 
