@@ -8,6 +8,7 @@ source("install.R")
 set.seed(123)
 library(data.table)
 
+#read only these variables
 select.names <- c("click", "C1", "banner_pos", "site_category", "app_domain", "app_category", 
                   "device_type", "device_conn_type", "C15", "C16", "C17", "C18", "C19", 
                   "C21", "hour")

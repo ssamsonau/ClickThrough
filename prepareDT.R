@@ -6,7 +6,6 @@ prepareDT <- function(DT, use, factorLimitN){
 
   colToDelete <- c("")
   
-  
   #Wokring with date and Time
   #colToDelete <- c(colToDelete, "hour")
   DT[, onlyHour:=substr(DT$hour, 7, 8)]
@@ -34,8 +33,6 @@ prepareDT <- function(DT, use, factorLimitN){
     #colToDelete <- names(DT)[!matchNames]
   }
 
-  
   DT[, (colToDelete):= NULL]
   #DT[, (names(DT)):= lapply(.SD, as.factor), .SDcols=names(DT)]
 }
-
