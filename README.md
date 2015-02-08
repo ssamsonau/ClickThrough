@@ -12,3 +12,4 @@ Files:
 * prepareDT.R - formats the data, creates additional features, removes data with too many factors (in order to be able to run on a regular desktop)
 * h2o.R - create learning model, using deep learning algorithm implemented in h2o package
 * h2o_predict.R - use build model make a prediction.
+* install.R - used while running scripts on [Domino Data Lab](http://www.dominodatalab.com/)
